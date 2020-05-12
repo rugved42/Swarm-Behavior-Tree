@@ -13,7 +13,7 @@ from go_to_point import go_to_point1
 from oa import obstacle_avoidance 
 
 class pso_movement(): 
-    def __init__(self, laser_topic, pose_topic, pub_topic, ini_pos_,check, desired_position_):
+    def __init__(self, laser_topic, pose_topic, pub_topic, ini_pos_,desired_position_):
         self.path = desired_position_
         self.ini_pos_ =  ini_pos_
         self.x1 = self.path[0]
@@ -36,7 +36,7 @@ class pso_movement():
         self.state_desc_ = ['Go to point', 'wall following']
         self.distance_position_to_line = 0
         self.flag = 0
-        self.check = check
+        # self.check = check
     
     def clbk_laser(self,msg):
         self.regions_ = {
@@ -56,7 +56,10 @@ class pso_movement():
     def distance_to_line(self):
         up_eq = math.fabs((self.y1 - self.ini_y) * self.x - (self.x1 - self.ini_x) * self.y + (self.x1 * self.ini_y) - (self.y1 * self.ini_x))
         lo_eq = math.sqrt(pow(self.y1 - self.ini_y, 2) + pow(self.x1 - self.ini_x, 2))
-        distance = up_eq / lo_eq
+        if lo_eq != 0:
+            distance = up_eq / lo_eq
+        else: 
+            distance = up_eq
         return distance 
     
     def change_state(self,state):
@@ -71,7 +74,7 @@ class pso_movement():
     
     def main(self): 
         print("Robot started")
-        rospy.init_node('pso')
+        # rospy.init_node('pso')
         # self.state_ = 0
         self.change_state(0)
         rate = rospy.Rate(20)
@@ -107,12 +110,6 @@ class pso_movement():
                 print("DONE DONE DONE")
                 self.flag = 1
                 break
-            if self.check == 0:
-                print("breaking to check")
-                self.flag = 0
-                self.check = 1
-                break
-            i += 1
             # print("Printing_state",self.state_)
             rate.sleep()
 

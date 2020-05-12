@@ -104,11 +104,11 @@ class go_to_point1():
                 rospy.logerr('Unknown state!')
                 pass
             rate.sleep()
-            
-            if i%15 == 0:
+            i += 1
+            if i%10 == 0:
                 # print("Breaking")
                 break
-            i += 1
+            
         # return self.done_status
         
 

@@ -104,11 +104,11 @@ class obstacle_avoidance():
             else:
                 rospy.logerr('Unknown state!')
             self.pub_.publish(msg)
-            
-            if i % 50 == 0:
+            i += 1
+            if i % 30 == 0:
                 # print("Breaking_Wall_Following")
                 break
-            i += 1
+            
             rate.sleep()
  
 if __name__ == '__main__':
