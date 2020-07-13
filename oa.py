@@ -8,17 +8,20 @@ from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion
 from sensor_msgs.msg import LaserScan
+import random
 
 class obstacle_avoidance():
-    def __init__(self,sub_topic, pub_topic): 
+    def __init__(self,sub_topic, pub_topic, X): 
         self.sub_topic = sub_topic
         self.pub_topic = pub_topic
+        self.X = X
         self.pub_ = rospy.Publisher(self.pub_topic, Twist, queue_size=1)
         self.regions_ = {'right': 0,'fright': 0,'front': 0,'fleft': 0,'left': 0}
         self.state_ = 0
         self.state_dict_ = {0: 'find the wall',1: 'turn left',2: 'follow the wall'}
         self.sub = rospy.Subscriber(self.sub_topic, LaserScan, self.clbk_laser)
         self.velocity = Twist()
+        self.i = 0
 
     
     def clbk_laser(self,msg):
@@ -42,7 +45,7 @@ class obstacle_avoidance():
         angular_z = 0
         state_description = ''
         
-        d = 1.20
+        d = self.X[0]
         
         if regions['front'] > d and regions['fleft'] > d and regions['fright'] > d:
             state_description = 'case 1 - nothing'
@@ -82,6 +85,11 @@ class obstacle_avoidance():
         msg = Twist()
         msg.angular.z = -2
         return msg
+
+    def turn_right(self):
+        msg = Twist()
+        msg.angular.z = 2
+        return msg
     
     def follow_the_wall(self):
         msg = Twist()
@@ -92,12 +100,16 @@ class obstacle_avoidance():
         # rospy.init_node('reading_laser')
         rate = rospy.Rate(10)
         i = 0
+        x = 1 if (random.random()) < 0.85 else -1
         while not rospy.is_shutdown():
             msg = Twist()
             if self.state_ == 0:
                 msg = self.find_wall()
             elif self.state_ == 1:
-                msg = self.turn_left()
+                if x == 1:
+                    msg = self.turn_left()
+                else: 
+                    msg = self.turn_right()
             elif self.state_ == 2:
                 msg = self.follow_the_wall()
                 pass
@@ -105,7 +117,7 @@ class obstacle_avoidance():
                 rospy.logerr('Unknown state!')
             self.pub_.publish(msg)
             i += 1
-            if i % 30 == 0:
+            if i % int(self.X[1]) == 0:
                 # print("Breaking_Wall_Following")
                 break
             
