@@ -7,6 +7,7 @@ import math
 from pso_movement import pso_movement
 import rospy
 
+
 def f(X):
     exec(open("/home/rugvedhattekar/catkin_ws/src/ros_pa1_rug/scripts/Swarm-Behavior-Tree/reset_env.py").read())
     robots = [
@@ -24,7 +25,7 @@ def f(X):
     toa = 50
     data = []
     obj_fun = []
-    for i in range(len(robots)):
+    for i in range(len(robots) - 5):
         obj = pso_movement(robots[i][0],robots[i][1], robots[i][2],ini_pos[i],goal_pos[i],X)
         print("X",X)
         obj.main()
@@ -37,14 +38,14 @@ def f(X):
         delta = math.hypot(obj.x1 - obj.x, obj.y1 - obj.y)
         print("Delta and time", delta ,ti)
         if delta > 0.40 and ti >= toa: 
-            koa = 2
+            koa = 3
         else: 
             koa = 0
         data.append((ti, delta))
         if ti < toa and delta < 0.40:
             succ = 1
         else: 
-            succ = 0.2
+            succ = 0.05
         
         tm = koa * (1- succ) + succ * (ti/toa)
         print("Objective function", tm)

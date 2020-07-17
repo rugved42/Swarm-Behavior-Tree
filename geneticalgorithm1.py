@@ -64,8 +64,8 @@ class geneticalgorithm():
                  variable_boundaries=None,\
                  variable_type_mixed=None, \
                  function_timeout=1500,\
-                 algorithm_parameters={'max_num_iteration': None,\
-                                       'population_size':100,\
+                 algorithm_parameters={'max_num_iteration': 10,\
+                                       'population_size':5,\
                                        'mutation_probability':0.1,\
                                        'elit_ratio': 0.01,\
                                        'crossover_probability': 0.5,\
